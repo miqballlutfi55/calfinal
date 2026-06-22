@@ -1,0 +1,30 @@
+name: Build APK Otomatis
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Ambil File
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Ekstrak ZIP dan Build APK
+      run: |
+        unzip -q *.zip
+        cd $(dirname $(find . -name "gradlew" | head -1))
+        chmod +x gradlew
+        ./gradlew assembleDebug
+
+    - name: Serahkan APK ke User
+      uses: actions/upload-artifact@v4
+      with:
+        name: Kalkulator-SMC-Tinggal-Install
+        path: "**/app/build/outputs/apk/debug/*.apk"
